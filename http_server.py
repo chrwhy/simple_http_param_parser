@@ -6,13 +6,13 @@ import parser
 def response():
     print('\nResponse sent')
     return ("HTTP/1.1 200 OK\r\n".encode()
-            + "Content-Length: 11\r\n".encode()
+            + "Content-Length: 14\r\n".encode()
             + "Server: Simple HTTP Parser\r\n".encode()
             + "Date: Sat, 25 Aug 2018 14:04:43 GMT\r\n".encode()
             + "Content-Type: application/json; charset=utf-8\r\n".encode()
             + "Connection: close\r\n".encode()
             + "\r\n".encode()
-            + '{\"a\":\"b\"}\r\n'.encode())
+            + '{\"code\":\"0\"}\r\n'.encode())
     # + "\r\n".encode())
 
 
@@ -54,6 +54,7 @@ def start_tcp_server(ip, port):
                     value = line.split(': ', 1)[1]
                     request.headers[key] = value
                 if line == '':
+                    receive_one_by_one(client)
                     break
                 line = ''
             else:
@@ -66,8 +67,9 @@ def start_tcp_server(ip, port):
         else:
             content_len = int(request.headers['Content-Length'])
 
-        body = read_data(client, content_len)
+
         print('=============BODY=============')
+        body = read_data(client, content_len)
         parser.parse_body(request, body)
         client.send(response())
 
