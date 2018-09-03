@@ -60,7 +60,7 @@ def start_tcp_server(ip, port):
                 if not bt[0].__eq__(0x0A):
                     line += bt.decode()
 
-        content_len=0
+        content_len = 0
         if request.headers.__contains__('content-length'):
             content_len = int(request.headers['content-length'])
         else:
@@ -91,23 +91,6 @@ def read_line(data_bytes):
 
 def receive_one_by_one(client):
     return client.recv(1)
-    '''
-    st = x.decode()
-    if st == '\r':
-        if x.__eq__(0x0A):
-            return ''
-
-    if st == '\n':
-        if x.__eq__(0x0D):
-            return 'EOL'
-
-    return st
-    '''
-
-
-def GetData2(client2, expect):
-    print('Receiving data...')
-    return client2.recv(expect)
 
 
 def read_data(client, expect):

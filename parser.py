@@ -85,9 +85,9 @@ def parse_mutipart(part, idx):
             line.append(part[pos])
             pos += 1
 
-    disposiition = headers['Content-Disposition']
-    if disposiition.find('filename') > -1:
-        params = disposiition.split('; ')
+    disposition = headers['Content-Disposition']
+    if disposition.find('filename') > -1:
+        params = disposition.split('; ')
         for param in params:
             pairs = param.split('=')
             if len(pairs) > 1:
