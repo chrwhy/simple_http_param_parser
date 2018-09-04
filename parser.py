@@ -7,6 +7,9 @@ class SimpleRequest:
     def __init__(self):
         pass
 
+    def get_param_by_name(self, name):
+        return self.params[name]
+
 
 def parse_url_param(request, url_params):
     if url_params.find('?') == -1:
@@ -30,7 +33,7 @@ def parse_body_param(request, body):
 
 
 def parse_body_part(request, body):
-    print('form-data/mutipart ', 'way', '\n')
+    # print('form-data/mutipart ', 'way', '\n')
     part = []
     pos = 0
     i = 0
@@ -48,7 +51,7 @@ def parse_body_part(request, body):
 
 
 def save_orig_part(part, idx):
-    f = open('orig_mutipart_' + str(idx) + '.txt', 'wb+')
+    f = open('orig_multipart_' + str(idx) + '.txt', 'wb+')
     f.write(bytes(part))
     f.close()
 
@@ -60,20 +63,20 @@ def parse_mutipart(part, idx):
     while pos < len(part):
         if part[pos].__eq__(0x0D) and part[pos + 1].__eq__(0x0A):
             pos = pos + 2
-            print('Boundary line end.\n')
+            # print('Boundary line end.\n')
             break
         pos += 1
 
     headers = {}
     line = []
 
-    print('Mutipart header start\n')
+    # print('Mutipart header start\n')
     while pos < len(part):
         if part[pos].__eq__(0x0D) and part[pos + 1].__eq__(0x0A):
             if len(line) == 0:
                 pos += 2
                 break
-            print('Mutipart header line: ', bytes(line).decode())
+            print(bytes(line).decode())
             header_line = bytes(line).decode()
             k = header_line.split(": ")[0]
             y = header_line.split(": ")[1]
@@ -91,14 +94,17 @@ def parse_mutipart(part, idx):
         for param in params:
             pairs = param.split('=')
             if len(pairs) > 1:
-                print(pairs[0], ": ", pairs[1])
+                pass
+                #print(pairs[0], ": ", pairs[1])
     else:
-        print('form-value: ', bytes(part[pos:]).decode())
+        pass
+        print(bytes(part[pos:]).decode())
+    print('\n')
 
 
 def parse_body(request, body):
     content_type = request.headers['Content-Type']
-    print('Content-Type: ', content_type)
+    # print('Content-Type: ', content_type)
     if content_type.find('multipart/form-data') > -1:
         parse_body_part(request, body)
         return

@@ -67,7 +67,6 @@ def start_tcp_server(ip, port):
         else:
             content_len = int(request.headers['Content-Length'])
 
-
         print('=============BODY=============')
         body = read_data(client, content_len)
         parser.parse_body(request, body)
