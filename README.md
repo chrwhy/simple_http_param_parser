@@ -6,7 +6,7 @@
 HTTP协议请求(Request)分为3部分: 起始行(Start Line),首部(Header)以及实体主体(Body), 大致的解析原理是客户端请求进来后, 服务端读取请求的内容, 然后参照HTTP协议结构规范进行逐个部分解析,里头基本都是使用 '\r\n','\r\n\r\n' 进行分隔, 解析起来也是挺那啥的...... 
 HTTP结构就分成3部分, 起始行跟首部就逐行解析, 至于Body就依赖于 Content-Type类型解析
 
-好了, 执行 **python http_parser.py** 然后用Postman往8080端口发送请求就可以了
+好了, 执行 **python http_listener.py** 然后用Postman往8080端口发送请求就可以了
 
 
 e.g.
