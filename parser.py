@@ -1,3 +1,6 @@
+import sys
+
+
 class SimpleRequest:
     headers = {}
     params = {}
@@ -67,19 +70,31 @@ def save_orig_part(part, idx):
     f.close()
 
 
-def parse_mutipart_param(request, headers):
-    #TBC, I have to go out for a while
+def parse_mutipart_param(request, headers, content):
+    # TBC, I have to go out for a while
+    disposition = headers['Content-Disposition'.upper()]
+    params = {}
+    for param in disposition.split('; '):
+        param = param.replace('\"', '')
+        pairs = param.split('=')
+        if len(pairs) > 1:
+            pass
+            k = pairs[0]
+            v = pairs[1]
+            #print(pairs[0], ": ", pairs[1])
+            params[k] = v
+
     if headers.__contains__('Content-Type'.upper()):
-        pass
-        #print('Attachment')
+        try:
+            f = open(params['filename'], 'wb+')
+            f.write(bytes(content))
+            f.close()
+        except:
+            print("Unexpected error:", sys.exc_info()[0])
     else:
-        disposition = headers['Content-Disposition'.upper()]
-        params = disposition.split('; ')
-        for param in params:
-            pairs = param.split('=')
-            if len(pairs) > 1:
-                pass
-                print(pairs[0], ": ", pairs[1])
+        print(bytes(content).decode())
+        name = params['name']
+        request.params[name] = bytes(content).decode()
 
     print('\n')
 
@@ -97,7 +112,7 @@ def parse_mutipart(request, part, idx):
     line = []
 
     headers = {}
-    content_start_point = 0
+    content_start_pos = 0
     while pos < len(part):
         if part[pos].__eq__(0x0D) and part[pos + 1].__eq__(0x0A) and part[pos + 2].__eq__(0x0D) and part[
             pos + 3].__eq__(0x0A):
@@ -107,7 +122,7 @@ def parse_mutipart(request, part, idx):
             k = header_line.split(": ")[0]
             y = header_line.split(": ")[1]
             headers[k.upper()] = y
-            content_start_point = pos + 4
+            content_start_pos = pos + 4
             break
 
         if part[pos].__eq__(0x0D) and part[pos + 1].__eq__(0x0A):
@@ -128,7 +143,7 @@ def parse_mutipart(request, part, idx):
             line.append(part[pos])
             pos += 1
 
-    parse_mutipart_param(request, headers)
+    parse_mutipart_param(request, headers, part[content_start_pos:])
 
 
 def parse_body(request, body):

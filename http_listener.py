@@ -36,7 +36,7 @@ def start_tcp_server(ip, port):
         print('=============START LINE=============')
         line = ''
         while True:
-            bt = receive_one_by_one(client)
+            bt = read_data(client, 1)
             if bt[0].__eq__(0x0D):
                 print(line, '\n')
                 break
@@ -47,16 +47,15 @@ def start_tcp_server(ip, port):
         print('=============HEADER=============')
         line = ''
         while True:
-            bt = receive_one_by_one(client)
+            bt = read_data(client, 1)
             if bt[0].__eq__(0x0D):
                 print(line)
                 if line != '':
                     key = line.split(': ', 1)[0]
                     value = line.split(': ', 1)[1]
                     request.add_header(key, value)
-                    # request.headers[key] = value
                 if line == '':
-                    receive_one_by_one(client)
+                    read_data(client, 1)
                     break
                 line = ''
             else:
@@ -68,11 +67,14 @@ def start_tcp_server(ip, port):
         print('=============BODY=============')
         body = read_data(client, content_len)
         parser.parse_body(request, body)
+        print_req_params(request)
         client.send(response())
 
 
-def receive_one_by_one(client):
-    return client.recv(1)
+def print_req_params(request):
+    print('Request params: ')
+    for k, v in request.params.items():
+        print(k, ':', v)
 
 
 def read_data(client, expect):
