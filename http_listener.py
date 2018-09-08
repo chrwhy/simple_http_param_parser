@@ -42,6 +42,7 @@ def start_tcp_server(ip, port):
                 break
             else:
                 line += bt.decode()
+        parser.parse_start_line(request, line)
 
         print('=============HEADER=============')
         line = ''
@@ -52,7 +53,8 @@ def start_tcp_server(ip, port):
                 if line != '':
                     key = line.split(': ', 1)[0]
                     value = line.split(': ', 1)[1]
-                    request.headers[key] = value
+                    request.add_header(key, value)
+                    # request.headers[key] = value
                 if line == '':
                     receive_one_by_one(client)
                     break
@@ -61,33 +63,12 @@ def start_tcp_server(ip, port):
                 if not bt[0].__eq__(0x0A):
                     line += bt.decode()
 
-        content_len = 0
-        if request.headers.__contains__('content-length'):
-            content_len = int(request.headers['content-length'])
-        else:
-            content_len = int(request.headers['Content-Length'])
+        content_len = int(request.get_header('Content-Length'))
 
         print('=============BODY=============')
         body = read_data(client, content_len)
         parser.parse_body(request, body)
         client.send(response())
-
-
-def read_line(data_bytes):
-    data_in_str = data_bytes.decode()
-    total_length = len(data_in_str)
-    request = parser.SimpleRequest()
-
-    pos = parser.parse_start_line(request, data_in_str, 0, total_length)
-
-    print('Cursor: ', pos)
-    pos = parser.parse_header(request, data_in_str, pos, total_length)
-
-    print('Cursor: ', pos)
-    parser.parse_body(request, data_in_str[pos:])
-    request.params.items()
-    for k, y in (request.params.items()):
-        print(k, ':', y)
 
 
 def receive_one_by_one(client):

@@ -10,6 +10,17 @@ class SimpleRequest:
     def get_param_by_name(self, name):
         return self.params[name]
 
+    def add_header(self, key, value):
+        self.headers[key.upper()] = value
+
+    def contains_header(self, key):
+        return self.headers.__contains__(key.upper())
+
+    def get_header(self, key):
+        if not self.headers.__contains__(key.upper()):
+            return ''
+        return self.headers[key.upper()]
+
 
 def parse_url_param(request, url_params):
     if url_params.find('?') == -1:
@@ -41,7 +52,7 @@ def parse_body_part(request, body):
         # \r\n--
         if body[i].__eq__(0x0D) and body[i + 1].__eq__(0x0A) and body[i + 2].__eq__(0x2D) and body[
             i + 3].__eq__(0x2D):
-            parse_mutipart(part, pos)
+            parse_mutipart(request, part, pos)
             pos += 1
             part.clear()
             i = i + 2
@@ -56,55 +67,72 @@ def save_orig_part(part, idx):
     f.close()
 
 
-def parse_mutipart(part, idx):
+def parse_mutipart_param(request, headers):
+    #TBC, I have to go out for a while
+    if headers.__contains__('Content-Type'.upper()):
+        pass
+        #print('Attachment')
+    else:
+        disposition = headers['Content-Disposition'.upper()]
+        params = disposition.split('; ')
+        for param in params:
+            pairs = param.split('=')
+            if len(pairs) > 1:
+                pass
+                print(pairs[0], ": ", pairs[1])
+
+    print('\n')
+
+
+def parse_mutipart(request, part, idx):
     save_orig_part(part, idx)
 
     pos = 0
     while pos < len(part):
         if part[pos].__eq__(0x0D) and part[pos + 1].__eq__(0x0A):
             pos = pos + 2
-            # print('Boundary line end.\n')
+            # end of Boundary line, jump out to parse the 'REAL' part
             break
         pos += 1
-
-    headers = {}
     line = []
 
-    # print('Mutipart header start\n')
+    headers = {}
+    content_start_point = 0
     while pos < len(part):
-        if part[pos].__eq__(0x0D) and part[pos + 1].__eq__(0x0A):
-            if len(line) == 0:
-                pos += 2
-                break
+        if part[pos].__eq__(0x0D) and part[pos + 1].__eq__(0x0A) and part[pos + 2].__eq__(0x0D) and part[
+            pos + 3].__eq__(0x0A):
+            # The multipart 'content', could be the key-value form, or attachment binaries, parse it according to the Content-Type
             print(bytes(line).decode())
             header_line = bytes(line).decode()
             k = header_line.split(": ")[0]
             y = header_line.split(": ")[1]
-            headers[k] = y
+            headers[k.upper()] = y
+            content_start_point = pos + 4
+            break
 
+        if part[pos].__eq__(0x0D) and part[pos + 1].__eq__(0x0A):
+            # Header line of the multipart
+            if len(line) == 0:
+                pos += 2
+                break
+
+            print(bytes(line).decode())
+
+            header_line = bytes(line).decode()
+            k = header_line.split(": ")[0]
+            y = header_line.split(": ")[1]
+            headers[k.upper()] = y
             pos += 2
             line.clear()
         else:
             line.append(part[pos])
             pos += 1
 
-    disposition = headers['Content-Disposition']
-    if disposition.find('filename') > -1:
-        params = disposition.split('; ')
-        for param in params:
-            pairs = param.split('=')
-            if len(pairs) > 1:
-                pass
-                #print(pairs[0], ": ", pairs[1])
-    else:
-        pass
-        print(bytes(part[pos:]).decode())
-    print('\n')
+    parse_mutipart_param(request, headers)
 
 
 def parse_body(request, body):
-    content_type = request.headers['Content-Type']
-    # print('Content-Type: ', content_type)
+    content_type = request.get_header('Content-Type')
     if content_type.find('multipart/form-data') > -1:
         parse_body_part(request, body)
         return
@@ -115,49 +143,9 @@ def parse_body(request, body):
         print(body.decode())
 
 
-def parse_start_line(request, data_in_str, pos, total_length):
-    print('*****Start line*****')
-    start_line = ''
-    while pos < total_length:
-        if '\r' == data_in_str[pos] and data_in_str[pos + 1] == '\n':
-            pos += 2
-            print(start_line)
-            print('$$$$$Start line$$$$$\n')
-
-            method = start_line.split(' ', 2)[0]
-            url = start_line.split(' ', 2)[1]
-            protocol = start_line.split(' ', 2)[2]
-
-            parse_url_param(request, url)
-
-            print('METHOD: ', method)
-            print('URL: ', url)
-            print('PROTOCOL: ', protocol)
-
-            request.method = method
-            return pos
-        else:
-            start_line += data_in_str[pos]
-            pos += 1
-
-
-def parse_header(request, data_in_str, pos, total_length):
-    print('*****Header*****')
-    line = ''
-    while pos < total_length:
-        if '\r' == data_in_str[pos] and data_in_str[pos + 1] == '\n':
-            pos += 2
-            print(line)
-            if line == '':
-                break
-            else:
-                key = line.split(': ', 1)[0]
-                value = line.split(': ', 1)[1]
-                request.headers[key] = value
-            line = ''
-        else:
-            line += data_in_str[pos]
-            pos += 1
-    print('$$$$$Header$$$$$\n')
-    print(line)
-    return pos
+def parse_start_line(request, start_line):
+    method = start_line.split(' ', 2)[0]
+    url = start_line.split(' ', 2)[1]
+    protocol = start_line.split(' ', 2)[2]
+    parse_url_param(request, url)
+    request.method = method
