@@ -1,12 +1,12 @@
 # simple_http_param_parser
 
-目前是一个demo, 业余时间的side project, 用Python3写下的学习性质的HTTP parser入门引导, 目的是交流学习, 目前只支持GET, POST, PUT等有限的常用HTTP Method解析.
+目前是一个demo, 业余时间的side project, 用Python3写下的学习性质的HTTP1.1 parser入门引导, 目的是交流学习, 目前只支持GET, POST, PUT等有限的常用HTTP Method解析.
 这仅仅是simple parser用于解析HTTP的结构以及参数等, 并不是HTTP协议的实现 (可以用在一些简单场景的调试, 比如利用Postman发起请求的时候, 可以查看服务端接收到的完整请求, 当然目前功能也不太完善, 时间精力允许的话我会慢慢改进.....)
 
 HTTP协议请求(Request)分为3部分: 起始行(Start Line),首部(Header)以及实体主体(Body), 大致的解析原理是客户端请求进来后, 服务端读取请求的内容, 然后参照HTTP协议结构规范进行逐个部分解析,里头基本都是使用 '\r\n','\r\n\r\n' 进行分隔, 解析起来也是挺那啥的...... 
 HTTP结构就分成3部分, 起始行跟首部就逐行解析, 至于Body就依赖于 Content-Type类型解析
 
-好了, 执行 **python http_parser.py** 就好了
+好了, 执行 **python http_parser.py** 然后用Postman往8080端口发送请求就可以了
 
 
 e.g.
