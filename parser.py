@@ -81,7 +81,7 @@ def parse_mutipart_param(request, headers, content):
             pass
             k = pairs[0]
             v = pairs[1]
-            #print(pairs[0], ": ", pairs[1])
+            # print(pairs[0], ": ", pairs[1])
             params[k] = v
 
     if headers.__contains__('Content-Type'.upper()):
@@ -154,8 +154,16 @@ def parse_body(request, body):
 
     if content_type == 'application/x-www-form-urlencoded':
         parse_body_param(request, body.decode())
+    elif content_type == 'application/octet-stream':
+        f = open('octet-stream_data', 'wb+')
+        f.write(bytes(body))
+        f.close()
+        pass
     else:
-        print(body.decode())
+        pass
+        # print(body.decode())
+
+    print('\n')
 
 
 def parse_start_line(request, start_line):
