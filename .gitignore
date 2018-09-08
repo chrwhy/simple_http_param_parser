@@ -1,4 +1,4 @@
 .DS_Store
 __pycache__/
 .idea/
-orig_mutipart_*.txt
+orig_multipart_*.txt
