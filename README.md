@@ -8,6 +8,10 @@ HTTP结构就分成3部分, 起始行跟首部就逐行解析, 至于Body就依�
 
 好了, 执行 **python http_listener.py** 然后用Postman往8080端口发送请求就可以了
 
+2018.9.8 Update
+---
+1. 把multipart/form-data上传的文件写成本地文件
+2. 把 request 中的 parameters 补全
 
 e.g.
 multipart/form-data
