@@ -28,22 +28,21 @@ class SimpleRequest:
 def parse_url_param(request, url_params):
     if url_params.find('?') == -1:
         return
-    pairs = url_params.split('?')[1].split('&')
+    _parse_and_split_param(request, url_params.split('?')[1])
+
+def _parse_and_split_param(request, str):
+    pairs = str.split('&')
     for pair in pairs:
         key = pair.split('=', 1)[0]
         value = pair.split('=', 1)[1]
+        print(key, ': ', value)
         request.params[key] = value
 
 
 def parse_body_param(request, body):
     if '' == body:
         return
-    pairs = body.split('&')
-    for pair in pairs:
-        key = pair.split('=', 1)[0]
-        value = pair.split('=', 1)[1]
-        print(key, ': ', value)
-        request.params[key] = value
+    _parse_and_split_param(request, body)
 
 
 def parse_body_part(request, body):
