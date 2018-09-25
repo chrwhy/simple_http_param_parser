@@ -13,6 +13,10 @@ HTTP结构就分成3部分, 起始行跟首部就逐行解析, 至于Body就依�
 1. 把multipart/form-data上传的文件写成本地文件
 2. 把 request 中的 parameters 补全
 
+2018.9.25 Update
+---
+1. 补上 Transfer-Encoding: chunked 一般用做附件下载时使用(非定长的response body), 见 http_listener.py 中 response_chunked()函数 
+
 e.g.
 multipart/form-data
 -----
