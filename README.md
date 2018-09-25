@@ -41,3 +41,10 @@ application/json, text/plain...
 
 ![image](./doc/json_server.png)
 
+
+e.g.
+Transfer-Encoding: chunked
+-----
+Wireshark截图可以明了的看出 chunked 的分块结构
+![image](./doc/chunked_client.png)
+

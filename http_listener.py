@@ -25,10 +25,12 @@ def response_chunked():
             + "Content-Type: text/plain; charset=utf-8\r\n".encode()
             + "Connection: close\r\n".encode()
             + "\r\n".encode()  # empty line
-            + '5\r\n'.encode()  # chunk size
-            + '12345\r\n'.encode()  # chunk body
-            + '0\r\n'.encode()  # 0 indicates EOF
-            + '\r\n'.encode())  # empty line(end of request)
+            + '5\r\n'.encode()  # chunk1 size
+            + 'test1\r\n'.encode()  # chunk 1
+            + '7\r\n'.encode()  # chunk2 size
+            + 'testing\r\n'.encode()  # chunk 2
+            + '0\r\n'.encode()  # 0 means EOF
+            + '\r\n'.encode())  # empty line(end of response)
 
 
 def start_tcp_server(ip, port):
