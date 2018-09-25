@@ -16,6 +16,21 @@ def response():
     # + "\r\n".encode())
 
 
+def response_chunked():
+    print('\nResponse sent')
+    return ("HTTP/1.1 200 OK\r\n".encode()
+            + "Transfer-Encoding: chunked\r\n".encode()
+            + "Server: Simple HTTP Parser\r\n".encode()
+            + "Date: Sat, 25 Aug 2018 14:04:43 GMT\r\n".encode()
+            + "Content-Type: text/plain; charset=utf-8\r\n".encode()
+            + "Connection: close\r\n".encode()
+            + "\r\n".encode()  # empty line
+            + '5\r\n'.encode()  # chunk size
+            + '12345\r\n'.encode()  # chunk body
+            + '0\r\n'.encode()  # 0 indicates EOF
+            + '\r\n'.encode())  # empty line(end of request)
+
+
 def start_tcp_server(ip, port):
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setblocking(1)
@@ -69,6 +84,7 @@ def start_tcp_server(ip, port):
         parser.parse_body(request, body)
         print_req_params(request)
         client.send(response())
+        #client.send(response_chunked())
 
 
 def print_req_params(request):
