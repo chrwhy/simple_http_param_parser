@@ -1,7 +1,6 @@
 import socket
 import sys
-import parser
-
+import param_parser
 
 def response():
     print('\nResponse sent')
@@ -43,7 +42,7 @@ def start_tcp_server(ip, port):
     except:
         sys.exit(1)
 
-    request = parser.SimpleRequest()
+    request = param_parser.SimpleRequest()
 
     while True:
         print("Waiting for connection...")
@@ -59,7 +58,7 @@ def start_tcp_server(ip, port):
                 break
             else:
                 line += bt.decode()
-        parser.parse_start_line(request, line)
+        param_parser.parse_start_line(request, line)
 
         print('=============HEADER=============')
         line = ''
@@ -83,7 +82,7 @@ def start_tcp_server(ip, port):
 
         print('=============BODY=============')
         body = read_data(client, content_len)
-        parser.parse_body(request, body)
+        param_parser.parse_body(request, body)
         print_req_params(request)
         client.send(response())
         #client.send(response_chunked())

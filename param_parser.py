@@ -149,18 +149,14 @@ def parse_body(request, body):
     content_type = request.get_header('Content-Type')
     if content_type.find('multipart/form-data') > -1:
         parse_body_part(request, body)
-        return
-
-    if content_type == 'application/x-www-form-urlencoded':
-        parse_body_param(request, body.decode())
-    elif content_type == 'application/octet-stream':
-        f = open('octet-stream_data', 'wb+')
+    elif content_type == 'application/x-www-form-urlencoded':
+        parse_body_param(request, body.decode())    
+    else:
+        #raw or binary content type
+        #{'application/octet-stream', 'application/x-msdownload','application/x-rar-compressed'}
+        f = open('octet-stream-data', 'wb+')
         f.write(bytes(body))
         f.close()
-        pass
-    else:
-        pass
-        # print(body.decode())
 
     print('\n')
 
