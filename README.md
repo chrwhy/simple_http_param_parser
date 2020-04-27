@@ -49,6 +49,7 @@ application/json, text/plain...
 e.g.
 Transfer-Encoding: chunked
 -----
-Wireshark截图可以明了的看出 chunked 的分块结构
+在无法确定Body长度的情况下(比如在附件下载的时候), 使用chunked方式对数据进行分块传输, 这样在收到最后一个size为0的时候即可得知数据传输已经完毕, 可以参考代码进行理解
+在 Wireshark截图可以明了的看出 chunked 的分块结构
 ![image](./doc/chunked_client.png)
 
